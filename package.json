@@ -1,0 +1,12 @@
+{
+  "name": "draw-and-guess",
+  "packageManager": "yarn@3.3.0",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "prettier": {
+    "trailingComma": "all",
+    "singleQuote": true
+  }
+}

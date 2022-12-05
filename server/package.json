@@ -1,0 +1,15 @@
+{
+  "name": "draw-and-guess-server",
+  "scripts": {
+    "start": "npm run ts-node src/index.ts",
+    "ts-node": "node -r @swc-node/register"
+  },
+  "dependencies": {
+    "socket.io": "^4.5.4"
+  },
+  "devDependencies": {
+    "@swc-node/register": "^1.5.4",
+    "@swc/core": "^1.3.21",
+    "typescript": "^4.9.3"
+  }
+}
