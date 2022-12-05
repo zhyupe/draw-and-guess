@@ -33,7 +33,7 @@ export function SizePicker({
   onChange: (v: number) => void;
 }) {
   return (
-    <div>
+    <div className={style.wrap}>
       {values.map((item) => (
         <Dot
           key={`${item}`}

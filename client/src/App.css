@@ -1,4 +1,24 @@
+.app {
+  width: 100vw;
+  display: flex;
+  justify-content: space-evenly;
+}
+
 .drawing-canvas {
+  background-color: #fff;
   border: 5px dashed #ccc;
   border-radius: 20px;
+}
+
+.drawing-tool {
+  display: flex;
+  margin-top: 10px;
+  align-items: center;
+}
+
+.pipe {
+  height: 16px;
+  margin-left: 8px;
+  padding-left: 8px;
+  border-left: 1px solid #cdcdcd;
 }
