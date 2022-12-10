@@ -8,8 +8,12 @@ import {
   MouseEvent,
 } from 'react';
 
-const dataRate = 100;
+const dataRate = 10;
 const inactive = -1;
+
+export interface CanvasRefObject {
+  clear: () => void;
+}
 
 function RealCanvas(
   {
@@ -29,19 +33,26 @@ function RealCanvas(
     lineColor: string;
     onChange?: (data: Uint8ClampedArray) => void;
   },
-  ref: ForwardedRef<{
-    clear: () => void;
-  }>,
+  ref: ForwardedRef<CanvasRefObject>,
 ) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const ctx = useRef<CanvasRenderingContext2D | null>();
+
+  const commit = useCallback(() => {
+    if (!ctx.current || !onChange) return;
+
+    const data = ctx.current.getImageData(0, 0, width, height);
+    onChange(data.data);
+  }, [onChange]);
 
   /** negative: inactive; zero/positive: count of move data collected */
   const dataCollected = useRef(inactive);
 
   useImperativeHandle(ref, () => ({
     clear() {
-      ctx.current?.clearRect(0, 0, width, height);
+      if (!drawing || !ctx.current) return;
+      ctx.current.clearRect(0, 0, width, height);
+      commit();
     },
   }));
 
@@ -133,9 +144,7 @@ function RealCanvas(
 
       if (++dataCollected.current > dataRate) {
         dataCollected.current = 0;
-
-        const data = context.getImageData(0, 0, width, height);
-        onChange?.(data.data);
+        commit();
       }
     },
     [drawing],
@@ -161,9 +170,7 @@ function RealCanvas(
       context.stroke();
 
       dataCollected.current = inactive;
-
-      const data = context.getImageData(0, 0, width, height);
-      onChange?.(data.data);
+      commit();
     },
     [drawing],
   );
