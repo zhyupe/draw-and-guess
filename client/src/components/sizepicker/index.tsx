@@ -14,7 +14,7 @@ function Dot({
   return (
     <div
       onClick={onClick}
-      className={style.dot}
+      className={`tool-btn ${style.dot}`}
       style={{ borderColor: active ? color : 'transparent' }}
     >
       <span style={{ width: size, height: size, background: color }} />

@@ -1,18 +1,29 @@
 .app {
   width: 100vw;
+  height: 100vh;
+
   display: flex;
+  padding: 20px;
+  box-sizing: border-box;
+
   justify-content: space-evenly;
+  align-items: stretch;
 }
 
 .drawing-canvas {
-  background-color: #fff;
-  border: 5px dashed #ccc;
+  background-color: var(--canvas);
+  border: 5px dashed var(--border);
   border-radius: 20px;
 }
 
 .drawing-tool {
   display: flex;
+  justify-content: space-between;
   margin-top: 10px;
+}
+
+.drawing-tool > div {
+  display: flex;
   align-items: center;
 }
 
@@ -20,5 +31,46 @@
   height: 16px;
   margin-left: 8px;
   padding-left: 8px;
-  border-left: 1px solid #cdcdcd;
+  border-left: 1px solid var(--border);
+}
+
+.tool-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 3px solid #fff;
+  background-color: #fff4;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+
+  transition: background-color .1s ease-in-out;
+}
+
+.tool-btn:hover {
+  background-color: #fffa;
+}
+
+button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 8px;
+
+  background-color: var(--stress-1);
+  color: var(--stress-inside);
+  cursor: pointer;
+
+  transition: background-color .1s ease-in-out;
+}
+
+button:hover {
+  background-color: var(--stress-2);
 }

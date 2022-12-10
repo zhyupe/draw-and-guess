@@ -53,7 +53,7 @@ export const PopoverPicker = ({
   return (
     <div className={style.picker}>
       <div
-        className={style.swatch}
+        className="tool-btn"
         style={{ backgroundColor: color }}
         onClick={() => toggle(true)}
       />
