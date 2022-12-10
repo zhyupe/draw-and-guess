@@ -8,5 +8,8 @@
   "prettier": {
     "trailingComma": "all",
     "singleQuote": true
+  },
+  "devDependencies": {
+    "typescript": "^4.9.3"
   }
 }
