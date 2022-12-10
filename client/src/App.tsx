@@ -3,6 +3,7 @@ import './App.css';
 import { Canvas } from './components/canvas';
 import { PopoverPicker } from './components/colorpicker';
 import { SizePicker } from './components/sizepicker';
+import { Chat } from './components/chat';
 
 function App() {
   const [color, setColor] = useState('#000');
@@ -26,6 +27,9 @@ function App() {
           <SizePicker color={color} value={size} onChange={setSize} />
         </div>
       </main>
+      <section>
+        <Chat data={chatLogger.log} onSend={emitChat} />
+      </section>
     </div>
   );
 }

@@ -1,0 +1,94 @@
+.wrap {
+  height: 100%;
+  width: 360px;
+
+  background-color: var(--border);
+
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.log {
+  box-sizing: border-box;
+  height: calc(100% - 55px);
+  margin-top: 15px;
+  padding: 0 10px 15px 15px;
+
+  overflow-y: scroll;
+  font-family: var(--font-1);
+}
+
+.log::-webkit-scrollbar {
+  width: 5px;
+  background-color: transparent;
+}
+
+/* Add a thumb */
+.log::-webkit-scrollbar-thumb {
+  background: var(--stress-1);
+  border-radius: 3px;
+}
+
+.card {
+  margin-top: 5px;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.cardHeader {
+  padding: 5px 10px;
+  font-weight: bold;
+  background: rgba(0, 0, 0, .1);
+}
+
+.cardBody {
+  padding: 5px 10px;
+}
+
+.author {
+  font-family: var(--font-2);
+}
+
+.message {
+  margin-top: 5px;
+}
+
+.input {
+  position: relative;
+  height: 40px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  background-color: var(--stress-1);
+}
+
+.input input {
+  width: 100%;
+  padding: 0 50px 0 10px;
+  border: 0;
+  outline: 0;
+  line-height: 40px;
+  background-color: transparent;
+  color: var(--stress-inside);
+}
+
+.input input:focus {
+  box-shadow: 1px 2px 5px var(--border);
+}
+
+.send {
+  position: absolute;
+  top: 0;
+  right: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--stress-2);
+  color: var(--stress-inside);
+
+  cursor: pointer;
+}
