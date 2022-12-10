@@ -31,6 +31,60 @@ export interface CanvasRefObject {
   clear: () => void;
 }
 
+export type CanvasData = ArrayBuffer;
+export type CanvasOnChange = (data: CanvasData, shouldSave?: boolean) => void;
+
+const getData = (canvas: HTMLCanvasElement) =>
+  new Promise<CanvasData>((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        return reject(new Error('blob is null'));
+      }
+
+      blob.arrayBuffer().then(resolve).catch(reject);
+    }, 'png');
+  });
+
+const doCommit = (() => {
+  let updated = false;
+
+  let running = false;
+  let latestShouldSave = false;
+  let latestCallback: CanvasOnChange;
+
+  return async (
+    canvas: HTMLCanvasElement,
+    callback: CanvasOnChange,
+    shouldSave: boolean,
+  ) => {
+    latestCallback = callback;
+    latestShouldSave ||= shouldSave;
+
+    updated = true;
+    console.log('[commitWorker] updated');
+
+    if (running) {
+      return;
+    }
+
+    running = true;
+    console.log('[commitWorker] run');
+    while (updated) {
+      updated = false;
+
+      const start = Date.now();
+      const data = await getData(canvas);
+
+      latestCallback(data, latestShouldSave);
+      console.log(`[commitWorker] finished in ${Date.now() - start}ms`);
+    }
+
+    latestShouldSave = false;
+    running = false;
+    console.log('[commitWorker] stop');
+  };
+})();
+
 function RealCanvas(
   {
     drawing,
@@ -42,12 +96,12 @@ function RealCanvas(
     onChange,
   }: {
     drawing: boolean;
-    data?: string;
+    data?: CanvasData;
     width: number;
     height: number;
     lineWidth: number;
     lineColor: string;
-    onChange?: (data: string, shouldSave?: boolean) => void;
+    onChange?: CanvasOnChange;
   },
   ref: ForwardedRef<CanvasRefObject>,
 ) {
@@ -57,9 +111,7 @@ function RealCanvas(
   const commit = useCallback(
     (shouldSave?: boolean) => {
       if (!canvas.current || !onChange) return;
-
-      const data = canvas.current.toDataURL('png');
-      onChange(data, shouldSave);
+      doCommit(canvas.current, onChange, !!shouldSave);
     },
     [onChange],
   );
@@ -97,10 +149,7 @@ function RealCanvas(
   }, [drawing, commit]);
 
   useEffect(() => {
-    ctx.current =
-      canvas.current?.getContext('2d', {
-        willReadFrequently: true,
-      }) ?? null;
+    ctx.current = canvas.current?.getContext('2d') ?? null;
   }, [canvas.current]);
 
   useEffect(() => {
@@ -113,7 +162,11 @@ function RealCanvas(
     if (drawing || !data || !ctx.current) return;
 
     const image = new Image();
-    image.src = data;
+    image.src = URL.createObjectURL(
+      new Blob([data], {
+        type: 'image/png',
+      }),
+    );
 
     image.onload = () => {
       ctx.current?.clearRect(0, 0, width, height);
@@ -124,7 +177,6 @@ function RealCanvas(
   const onClick = useCallback(
     (event: MouseEvent) => {
       if (!drawing || !canvas.current || !ctx.current) return;
-      event.preventDefault();
 
       const move = parseEvent(canvas.current, event);
       if (move) {
@@ -147,7 +199,6 @@ function RealCanvas(
   const onMouseDown = useCallback(
     (event: MouseEvent | TouchEvent) => {
       if (!drawing || !canvas.current || !ctx.current) return;
-      event.preventDefault();
 
       const move = parseEvent(canvas.current, event);
       if (move) {
@@ -175,7 +226,6 @@ function RealCanvas(
         !ctx.current
       )
         return;
-      event.preventDefault();
 
       const move = parseEvent(canvas.current, event);
       if (move) {
@@ -203,7 +253,6 @@ function RealCanvas(
         !ctx.current
       )
         return;
-      event.preventDefault();
 
       const move = parseEvent(canvas.current, event);
       if (move) {
@@ -224,6 +273,9 @@ function RealCanvas(
   return (
     <canvas
       ref={canvas}
+      style={{
+        touchAction: 'none',
+      }}
       {...{
         width,
         height,

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import './App.css';
-import { Canvas, CanvasRefObject } from './components/canvas';
+import { Canvas, CanvasData, CanvasRefObject } from './components/canvas';
 import { PopoverPicker } from './components/colorpicker';
 import { SizePicker } from './components/sizepicker';
 import { io, Socket } from 'socket.io-client';
@@ -13,7 +13,7 @@ import { Disconnect } from './components/icons/disconnect';
 function App() {
   const [color, setColor] = useState('#000');
   const [size, setSize] = useState(2);
-  const [data, setData] = useState<string>();
+  const [data, setData] = useState<CanvasData>();
   const [host, setHost] = useState<{ id: string; nickname: string } | null>(
     null,
   );
@@ -56,7 +56,7 @@ function App() {
     ref.current?.emit('chat', message);
   }, []);
 
-  const emitImage = useCallback((data: string) => {
+  const emitImage = useCallback((data: CanvasData) => {
     setData(data);
     ref.current?.emit('img', data);
   }, []);
