@@ -28,6 +28,7 @@ const parseEvent = (canvas: HTMLCanvasElement, e: MouseEvent | TouchEvent) => {
 };
 
 export interface CanvasRefObject {
+  set: (data: CanvasData) => void;
   clear: () => void;
 }
 
@@ -70,16 +71,18 @@ const doCommit = (() => {
     running = true;
     console.log('[commitWorker] run');
     while (updated) {
+      const currentShouldSave = latestShouldSave;
+      latestShouldSave = false;
       updated = false;
 
+      console.log('[commitWorker] start');
       const start = Date.now();
       const data = await getData(canvas);
 
-      latestCallback(data, latestShouldSave);
+      latestCallback(data, currentShouldSave);
       console.log(`[commitWorker] finished in ${Date.now() - start}ms`);
     }
 
-    latestShouldSave = false;
     running = false;
     console.log('[commitWorker] stop');
   };
@@ -88,7 +91,6 @@ const doCommit = (() => {
 function RealCanvas(
   {
     drawing,
-    data,
     width,
     height,
     lineWidth,
@@ -96,7 +98,6 @@ function RealCanvas(
     onChange,
   }: {
     drawing: boolean;
-    data?: CanvasData;
     width: number;
     height: number;
     lineWidth: number;
@@ -120,6 +121,22 @@ function RealCanvas(
   const dataChanged = useRef<boolean | null>(null);
 
   useImperativeHandle(ref, () => ({
+    set(data) {
+      if (!data || !ctx.current) return;
+
+      const image = new Image();
+      image.src = URL.createObjectURL(
+        new Blob([data], {
+          type: 'image/png',
+        }),
+      );
+
+      image.onload = () => {
+        if (!ctx.current) return;
+        ctx.current.clearRect(0, 0, width, height);
+        ctx.current.drawImage(image, 0, 0);
+      };
+    },
     clear() {
       if (!drawing || !ctx.current) return;
 
@@ -133,6 +150,7 @@ function RealCanvas(
     const listen = () => {
       timer = requestAnimationFrame(() => {
         if (dataChanged.current) {
+          dataChanged.current = false;
           commit();
         }
 
@@ -158,22 +176,6 @@ function RealCanvas(
     }
   }, [ctx.current, lineColor]);
 
-  useEffect(() => {
-    if (drawing || !data || !ctx.current) return;
-
-    const image = new Image();
-    image.src = URL.createObjectURL(
-      new Blob([data], {
-        type: 'image/png',
-      }),
-    );
-
-    image.onload = () => {
-      ctx.current?.clearRect(0, 0, width, height);
-      ctx.current?.drawImage(image, 0, 0);
-    };
-  }, [ctx.current, data, drawing, width, height]);
-
   const onClick = useCallback(
     (event: MouseEvent) => {
       if (!drawing || !canvas.current || !ctx.current) return;
@@ -196,11 +198,14 @@ function RealCanvas(
     [drawing, lineWidth],
   );
 
+  const lastMove = useRef<ReturnType<typeof parseEvent>>(null);
   const onMouseDown = useCallback(
     (event: MouseEvent | TouchEvent) => {
       if (!drawing || !canvas.current || !ctx.current) return;
 
       const move = parseEvent(canvas.current, event);
+      lastMove.current = move;
+
       if (move) {
         const { x, y, force } = move;
         const context = ctx.current;
@@ -228,7 +233,15 @@ function RealCanvas(
         return;
 
       const move = parseEvent(canvas.current, event);
-      if (move) {
+      const moved =
+        move &&
+        lastMove.current &&
+        (move.x !== lastMove.current.x || move.y !== lastMove.current.y);
+
+      if (moved) {
+        lastMove.current = move;
+        console.log(move);
+
         const { x, y, force } = move;
         const context = ctx.current;
         context.lineWidth = lineWidth * force;

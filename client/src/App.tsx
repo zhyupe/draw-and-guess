@@ -9,11 +9,11 @@ import { Chat } from './components/chat';
 import { useChatLogger } from './components/chat/manager';
 import { Connect } from './components/icons/connect';
 import { Disconnect } from './components/icons/disconnect';
+import { useCanvasHistory } from './components/history';
 
 function App() {
   const [color, setColor] = useState('#000');
   const [size, setSize] = useState(2);
-  const [data, setData] = useState<CanvasData>();
   const [host, setHost] = useState<{ id: string; nickname: string } | null>(
     null,
   );
@@ -21,6 +21,10 @@ function App() {
 
   const canvas = useRef<CanvasRefObject>(null);
   const ref = useRef<Socket>();
+  const store = useCanvasHistory((data) => {
+    canvas.current?.set(data);
+    ref.current?.emit('img', data);
+  });
 
   useEffect(() => {
     const query = new URLSearchParams(location.search);
@@ -40,8 +44,8 @@ function App() {
       ref.current = socket;
       socket.emit('auth', nickname);
     });
-    socket.on('img', (rData) => {
-      setData(rData);
+    socket.on('img', (data) => {
+      canvas.current?.set(data);
     });
     socket.on('chat', (item) => chatLogger.push(item));
     socket.on('host', setHost);
@@ -56,9 +60,11 @@ function App() {
     ref.current?.emit('chat', message);
   }, []);
 
-  const emitImage = useCallback((data: CanvasData) => {
-    setData(data);
+  const emitImage = useCallback((data: CanvasData, shouldSave?: boolean) => {
     ref.current?.emit('img', data);
+    if (shouldSave) {
+      store.push(data);
+    }
   }, []);
 
   const isHost = useMemo(
@@ -72,7 +78,6 @@ function App() {
         <div className="drawing-canvas">
           <Canvas
             ref={canvas}
-            data={data}
             width={1280}
             height={720}
             lineWidth={size}
@@ -86,6 +91,8 @@ function App() {
             <PopoverPicker color={color} onChange={setColor} />
             <span className="pipe" />
             <SizePicker color={color} value={size} onChange={setSize} />
+            <span className="pipe" />
+            {store.node}
           </div>
           <div>
             {host ? (
