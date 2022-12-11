@@ -1,6 +1,7 @@
 .app {
   width: 100vw;
   height: 100vh;
+  max-height: 820px;
 
   display: flex;
   padding: 20px;
@@ -10,14 +11,40 @@
   align-items: stretch;
 }
 
+.app main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+  
+  flex: 0 3 1290px;
+}
+
+.app section {
+  margin-left: 10px;
+  flex: 0 1 360px;
+}
+ 
 .drawing-canvas {
+  /* tools 40+10px, border 5+5px */
+  /* display: flex; */
+  max-height: calc(100% - 60px);
   background-color: var(--canvas);
   border: 5px dashed var(--border);
   border-radius: 20px;
+  aspect-ratio: auto 1280/720;
+}
+
+.drawing-canvas canvas {
+  flex: 1;
+  max-height: 100%;
+  max-width: 100%;
 }
 
 .drawing-tool {
   display: flex;
+  width: 100%;
+  flex: 0 0 40px;
   justify-content: space-between;
   margin-top: 10px;
 }

@@ -11,17 +11,20 @@ import {
 
 const parseEvent = (canvas: HTMLCanvasElement, e: MouseEvent | TouchEvent) => {
   const rect = canvas.getBoundingClientRect();
+  const ratioX = canvas.width / rect.width;
+  const ratioY = canvas.height / rect.height;
+
   if ('touches' in e) {
     const t = e.touches[0];
     if (!t) return null;
 
-    const x = t.clientX - rect.left;
-    const y = t.clientY - rect.top;
+    const x = (t.clientX - rect.left) * ratioX;
+    const y = (t.clientY - rect.top) * ratioY;
 
     return { x, y, force: (t as any).force || 1 };
   } else {
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const x = (e.clientX - rect.left) * ratioX;
+    const y = (e.clientY - rect.top) * ratioY;
 
     return { x, y, force: 1 };
   }
@@ -287,6 +290,7 @@ function RealCanvas(
     <canvas
       ref={canvas}
       style={{
+        display: 'block',
         touchAction: 'none',
       }}
       {...{
