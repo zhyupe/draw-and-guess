@@ -2,7 +2,6 @@ import { Server } from 'socket.io';
 
 const io = new Server(6075, {
   cors: {
-    origin: ['http://127.0.0.1:5173'],
     methods: ['GET', 'POST'],
   },
   maxHttpBufferSize: 1280 * 720 * 4,
