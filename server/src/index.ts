@@ -2,11 +2,14 @@ import { Server } from 'socket.io';
 import { getConfig } from './config';
 import { getWordList } from './word-manager';
 
+const config = getConfig();
+
 const io = new Server(6075, {
   cors: {
     methods: ['GET', 'POST'],
   },
   maxHttpBufferSize: 1280 * 720 * 4,
+  path: config.path,
 });
 const room = 'room';
 const words = getWordList();

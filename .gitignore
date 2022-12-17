@@ -6,4 +6,5 @@
 !.yarn/versions
 .pnp.*
 
+config.json
 dist/
