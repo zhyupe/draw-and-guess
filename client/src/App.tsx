@@ -42,7 +42,18 @@ function App() {
 
     socket.on('connect', () => {
       ref.current = socket;
+    });
+    socket.on('hello', () => {
       socket.emit('auth', nickname);
+    });
+
+    socket.on('disconnect', (reason) => {
+      chatLogger.push({
+        from: 'system',
+        nickname: 'Disconnected',
+        message: reason as string,
+        system: true,
+      });
     });
     socket.on('img', (data) => {
       canvas.current?.set(data);

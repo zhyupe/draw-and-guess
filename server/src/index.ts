@@ -19,6 +19,8 @@ io.on('connection', (socket) => {
   // auth
   const id = socket.id;
   let nickname: string | null = null;
+
+  socket.emit('hello');
   socket.once('auth', (arg) => {
     if (typeof arg === 'string') {
       nickname = arg;
