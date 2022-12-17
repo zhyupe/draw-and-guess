@@ -52,6 +52,23 @@
   margin-top: 5px;
 }
 
+.messageContent p {
+  margin: 0;
+}
+
+.messageContent p:first-of-type {
+  display: inline-block;
+}
+
+.messageContent ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.messageContent a {
+  color: #000a;
+}
+
 .input {
   position: relative;
   height: 40px;

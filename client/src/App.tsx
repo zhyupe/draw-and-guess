@@ -61,7 +61,20 @@ function App() {
     socket.on('chat', (item) => chatLogger.push(item));
     socket.on('host', setHost);
 
+    const hashHandler = () => {
+      const content = decodeURIComponent(location.hash);
+      if (!content.startsWith('#!emit|')) return;
+
+      const [topic, ...args] = JSON.parse(content.slice(7));
+      console.log(topic, args);
+      socket.emit(topic, ...args);
+      location.hash = '';
+    };
+
+    window.addEventListener('hashchange', hashHandler);
+
     return () => {
+      window.removeEventListener('hashchange', hashHandler);
       ref.current = undefined;
       socket.close();
     };

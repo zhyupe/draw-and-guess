@@ -9,6 +9,7 @@ import {
   useRef,
   useEffect,
 } from 'react';
+import ReactMarkdown from 'react-markdown';
 
 const colors = {
   system: '#A6E3E9',
@@ -31,14 +32,24 @@ function Card({
   );
 }
 
+function Message({ nickname, message }: Pick<ChatLog, 'nickname' | 'message'>) {
+  return (
+    <>
+      <span className={style.author}>{nickname}:</span>{' '}
+      <span className={style.messageContent}>
+        <ReactMarkdown>{message}</ReactMarkdown>
+      </span>
+    </>
+  );
+}
+
 function NormalMessage({
   nickname,
   message,
 }: Pick<ChatLog, 'from' | 'nickname' | 'message'>) {
   return (
     <div className={style.message}>
-      <span className={style.author}>{nickname}:</span>{' '}
-      <span className={style.messageContent}>{message}</span>
+      <Message nickname={nickname} message={message} />
     </div>
   );
 }
@@ -74,8 +85,7 @@ export function Chat({
                 color={item.private ? colors.private : colors.system}
                 header="System Message"
               >
-                <span className={style.author}>{item.nickname}</span>{' '}
-                <span className={style.messageContent}>{item.message}</span>
+                <Message nickname={item.nickname} message={item.message} />
               </Card>
             );
           } else {
