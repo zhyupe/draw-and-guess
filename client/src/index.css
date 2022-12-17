@@ -4,9 +4,15 @@
   line-height: 24px;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: #213547;
+  background-color: #FFFAD7;
+
+  --background: #FFFAD7;
+  --canvas: #fff;
+  --border: #FCDDB0;
+  --stress-1: #FF9F9F;
+  --stress-2: #E97777;
+  --stress-inside: #FFEFEF;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -31,14 +37,5 @@ body {
 
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
-    background-color: #FFFAD7;
-
-    --background: #FFFAD7;
-    --canvas: #fff;
-    --border: #FCDDB0;
-    --stress-1: #FF9F9F;
-    --stress-2: #E97777;
-    --stress-inside: #FFEFEF;
   }
 }
